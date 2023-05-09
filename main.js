@@ -11,6 +11,50 @@ const result = [];
 
 
 
+async function importCsvToDB(){
+    try{
+fs.createReadStream('data.csv')
+.pipe(csv())
+.on('data', (data) => {
+   //result.push(data)
+//    console.log("result..",result);
+   //console.log(data);
+   let [phone,halalStatus,alcoholStatus,costScale,paymentSystem,availability,deliveryOption,parkingOption,reservationOption,cateringOption,prayerStatus,
+    wifiAvailable,organicOption,restroomCondition,hookahStatus,wheelchairAvailable,familyFriendly] = data.quickFacts.split("|");
+    
+  delete data.quickFacts;
+
+  //console.log({...data, phone,halalStatus,alcoholStatus,costScale,paymentSystem,availability,deliveryOption,parkingOption});
+  
+   result.push({...data,  phone,halalStatus,alcoholStatus,costScale,paymentSystem,availability,deliveryOption,parkingOption,reservationOption,cateringOption,prayerStatus,
+    wifiAvailable,organicOption,restroomCondition,hookahStatus,wheelchairAvailable,familyFriendly});
+     
+
+})
+ .on('end',() =>{
+ 
+    console.log(result)
+//     Business.insertMany(result)
+//      .then(() =>{
+//       console.log("inserted");
+//  })
+//  .catch((error) =>{
+//        console.log(error);
+//   })   
+});
+}
+        catch (err) {
+       console.error(err);
+    }
+    
+   }
+  importCsvToDB();
+
+
+  app.get('/importResturants',(req,res) =>{
+    res.send(result);
+  })
+
 app.get('/',(req,res) =>{
     res.send('Running');
 });
@@ -19,20 +63,6 @@ app.get('/',(req,res) =>{
 
 app.listen(port,() =>{
     console.log("Sd");
-});
-
-fs.createReadStream('data.csv')
-.pipe(csv({}))
-.on('data', (data) => result.push(data))
- .on('end',() =>{
-   console.log(result);
-   Business.insertMany(result)
-   .then(() =>{
-    console.log("inserted");
-   })
-   .catch((error) =>{
-       console.log(error);
-   })   
 });
 
 
